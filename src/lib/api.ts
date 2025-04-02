@@ -15,7 +15,13 @@ axios.defaults.headers.common['User-Agent'] = `${Package.name.trim()}/${Package.
 axiosRetry(axios, {
   retries: 3,
   retryDelay: axiosRetry.exponentialDelay,
-  retryCondition: isRetryableError
+  retryCondition: (error) => {
+    const retry = isRetryableError(error);
+    if (retry) {
+      console.warn(`[HTTP Retry] Reason: ${error.code || error.message}`);
+    }
+    return retry;
+  }
 });
 
 const _error = function (error: AxiosError) {
